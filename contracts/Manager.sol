@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IStakes} from "./Stakes.sol";
 import {IBank} from "./Bank.sol";
@@ -20,6 +21,7 @@ contract Manager is AccessControl, Context {
     IStakes public stakes;
     IBank public bank;
     IERC20 public token;
+    IERC721 public nft;
 
     bytes32 public constant STAKE_MANAGER_ROLE =
         keccak256("STAKE_MANAGER_ROLE");
@@ -27,6 +29,7 @@ contract Manager is AccessControl, Context {
     event UpdatedStakes(address indexed stakes);
     event UpdatedBank(address indexed bank);
     event UpdatedToken(address indexed token);
+    event UpdatedNFT(address indexed nft);
     
     event Slashed(
         address indexed user,
@@ -39,10 +42,23 @@ contract Manager is AccessControl, Context {
         uint256 amount
     );
 
+    event WithdrawnWithNft(
+        address indexed user,
+        uint256 amount,
+        uint256 nftId
+    );
+
     event Staked(
         address indexed user,
         uint256 amount,
         uint256 duration
+    );
+
+    event StakedWithNft(
+        address indexed user,
+        uint256 amount,
+        uint256 duration,
+        uint256 nftId
     );
 
     error MinStakeDurationNotMet();
@@ -52,12 +68,13 @@ contract Manager is AccessControl, Context {
      * @dev Throws if called by any account other than the owner.
      * @notice This function is used to set the address of the stake manager.
      */
-    constructor(IStakes _stakes, IBank _bank, IERC20 _token) {
+    constructor(IStakes _stakes, IBank _bank, IERC20 _token, IERC721 _nft) {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _grantRole(STAKE_MANAGER_ROLE, _msgSender());
         stakes = _stakes;
         bank = _bank;
         token = _token;
+        nft = _nft;
     }
 
     /**
@@ -92,6 +109,16 @@ contract Manager is AccessControl, Context {
 
     /**
      * @dev Throws if called by any account other than the owner.
+     * @notice This function is used to set the address of the NFT contract.
+     * @param _nft The address of the NFT contract.
+     */
+    function setNFT(IERC721 _nft) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        nft = _nft;
+        emit UpdatedNFT(address(_nft));
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
      * @notice This function is used to stake tokens.
      * @param user The address of the user to stake for.
      * @param amount The amount of tokens to stake.
@@ -108,6 +135,23 @@ contract Manager is AccessControl, Context {
         emit Staked(user, amount, duration);
     }
 
+    function stakeWithNft(
+        address user,
+        uint256 amount,
+        uint256 duration,
+        uint256 nftId
+    ) external {
+        if (duration < MIN_STAKE_DURATION) {
+            revert MinStakeDurationNotMet();
+        }
+
+        token.safeTransferFrom(user, address(bank), amount);
+        nft.safeTransferFrom(user, address(bank), nftId);
+        stakes.stakeWithNft(user, amount, duration, nftId);
+
+        emit StakedWithNft(user, amount, duration, nftId);
+    }
+
     /**
      * @dev Throws if called by any account other than the owner.
      * @notice This function is used to withdraw staked tokens.
@@ -119,10 +163,23 @@ contract Manager is AccessControl, Context {
             revert NotUnlocked();
         }
 
-        stakes.withdraw(user);
-        bank.transfer(token, user, stakes.getStakeAmount(user));
+        uint256 stakeAmount = stakes.getStakeAmount(user);
+        if (stakeAmount > 0) {
+            bank.transfer(token, user, stakeAmount);
+        }
 
-        emit Withdrawn(user, stakes.getStakeAmount(user));
+        bool hasNft, uint256 stakedNftId = stakes.getStakedNftId(user);
+        if (hasNft) {
+            bank.transferERC721(nft, user, stakedNftId);
+        }
+
+        stakes.withdraw(user);
+        
+        if (hasNft) {
+            emit WithdrawnWithNft(user, stakeAmount, stakedNftId);
+        } else {
+            emit Withdrawn(user, stakeAmount);
+        }
     }
 
     /**

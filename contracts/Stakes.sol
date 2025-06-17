@@ -9,6 +9,8 @@ import {RepositoryUser} from "./RepositoryUser.sol";
  */
 contract Stakes is RepositoryUser {
     mapping(address => uint256) stakeAmounts;
+    mapping(address => uint256) satkedNfts;
+    mapping(address => bool) hasNft;
     mapping(address => uint256) unlockDates;
 
     /**
@@ -33,6 +35,18 @@ contract Stakes is RepositoryUser {
         unlockDates[user] = block.timestamp + duration;
     }
 
+    function stakeWithNft(
+        address user,
+        uint256 amount,
+        uint256 duration,
+        uint256 nftId
+    ) external onlyImplementation {
+        stakeAmounts[user] += amount;
+        satkedNfts[user] = nftId;
+        hasNft[user] = true;
+        unlockDates[user] = block.timestamp + duration;
+    }
+
     /**
      * @dev Throws if called by any account other than the implementation.
      * @notice This function is used to withdraw staked tokens.
@@ -41,6 +55,8 @@ contract Stakes is RepositoryUser {
     function withdraw(address user) external onlyImplementation {
         stakeAmounts[user] = 0;
         unlockDates[user] = 0;
+        satkedNfts[user] = 0;
+        hasNft[user] = false;
     }
 
     /**
@@ -50,6 +66,17 @@ contract Stakes is RepositoryUser {
      */
     function getStakeAmount(address user) external view returns (uint256) {
         return stakeAmounts[user];
+    }
+
+    /**
+     * @notice This function is used to get the staked NFT ID for a user.
+     * @param user The address of the user to get the staked NFT ID for.
+     * @return The staked NFT ID for the user.
+     */
+    function getStakedNftId(
+        address user
+    ) external view returns (bool, uint256) {
+        return (hasNft[user], satkedNfts[user]);
     }
 
     /**
@@ -65,9 +92,17 @@ contract Stakes is RepositoryUser {
 interface IStakes {
     function stake(uint256 amount, uint256 duration) external;
 
+    function stakeWithNft(
+        uint256 amount,
+        uint256 duration,
+        uint256 nftId
+    ) external;
+
     function withdraw() external;
 
     function getStakeAmount(address user) external view returns (uint256);
+
+    function getStakedNftId(address user) external view returns (bool, uint256);
 
     function getUnlockDate(address user) external view returns (uint256);
 }
