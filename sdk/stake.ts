@@ -1,6 +1,10 @@
 import type { Manager } from "../typechain-types/contracts";
 import type { StakeParams, StakeWithNftParams } from "./types";
 
+/**
+ * Stake caller (tx signer) with an amount and duration.
+ * Resolves once the tx is mined.
+ */
 export async function stake(
   manager: Manager,
   { amount, duration }: StakeParams
@@ -9,6 +13,10 @@ export async function stake(
   await tx.wait();
 }
 
+/**
+ * Stake caller (tx signer) with an amount, duration, and NFT ID.
+ * Resolves once the tx is mined.
+ */
 export async function stakeWithNft(
   manager: Manager,
   { amount, duration, nftId }: StakeWithNftParams
