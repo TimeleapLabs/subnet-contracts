@@ -2,18 +2,28 @@
 pragma solidity ^0.8.28;
 
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IStakes} from "./Stakes.sol";
 
 /**
  * @title Linker
  * @dev The Linker contract is used to link users to their subnet identifiers.
  */
-contract Linker is Context {
+contract Linker is Context, AccessControl {
     mapping(address => bytes32) private links;
     mapping(bytes32 => address) private reverseLinks;
 
     event Linked(address indexed user, bytes32 link);
 
     error AlreadyLinked(address user, bytes32 link);
+    error NoStake(address user);
+
+    IStakes public stakes;
+
+    constructor(IStakes _stakes) {
+        stakes = _stakes;
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
 
     /**
      * @dev Links a user to a specific identifier.
@@ -22,6 +32,13 @@ contract Linker is Context {
     function link(bytes32 to) external {
         if (reverseLinks[to] != address(0)) {
             revert AlreadyLinked(_msgSender(), to);
+        }
+
+        uint256 userStake = stakes.getStakeAmount(_msgSender());
+        (bool hasNft, ) = stakes.getStakedNftId(_msgSender());
+
+        if (userStake == 0 && !hasNft) {
+            revert NoStake(_msgSender());
         }
 
         links[_msgSender()] = to;

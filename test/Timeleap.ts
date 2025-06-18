@@ -79,9 +79,7 @@ describe("Manager – staking flow", function () {
       await token.connect(user).approve(manager.target, amount);
 
       await expect(
-        manager
-          .connect(deployer)
-          .stake(await user.getAddress(), amount, MIN_STAKE_DURATION - 1)
+        manager.connect(user).stake(amount, MIN_STAKE_DURATION - 1)
       ).to.be.revertedWithCustomError(manager, "MinStakeDurationNotMet");
     });
 
@@ -91,11 +89,7 @@ describe("Manager – staking flow", function () {
 
       await token.connect(user).approve(manager.target, amount);
 
-      await expect(
-        manager
-          .connect(deployer)
-          .stake(await user.getAddress(), amount, duration)
-      )
+      await expect(manager.connect(user).stake(amount, duration))
         .to.emit(manager, "Staked")
         .withArgs(await user.getAddress(), amount, duration);
 
@@ -116,11 +110,7 @@ describe("Manager – staking flow", function () {
       await token.connect(user).approve(manager.target, amount);
       await nft.connect(user).approve(manager.target, nftId);
 
-      await expect(
-        manager
-          .connect(deployer)
-          .stakeWithNft(await user.getAddress(), amount, duration, nftId)
-      )
+      await expect(manager.connect(user).stakeWithNft(amount, duration, nftId))
         .to.emit(manager, "StakedWithNft")
         .withArgs(await user.getAddress(), amount, duration, nftId);
 
@@ -136,25 +126,21 @@ describe("Manager – staking flow", function () {
     it("reverts if unlock date not reached", async () => {
       const amount = ethers.parseEther("5");
       await token.connect(user).approve(manager.target, amount);
-      await manager
-        .connect(deployer)
-        .stake(await user.getAddress(), amount, MIN_STAKE_DURATION + DAY);
+      await manager.connect(user).stake(amount, MIN_STAKE_DURATION + DAY);
 
       await expect(
-        manager.connect(deployer).withdraw(await user.getAddress())
+        manager.connect(user).withdraw()
       ).to.be.revertedWithCustomError(manager, "NotUnlocked");
     });
 
     it("withdraws ERC20 when unlocked", async () => {
       const amount = ethers.parseEther("15");
       await token.connect(user).approve(manager.target, amount);
-      await manager
-        .connect(deployer)
-        .stake(await user.getAddress(), amount, MIN_STAKE_DURATION);
+      await manager.connect(user).stake(amount, MIN_STAKE_DURATION);
 
       await increaseTime(MIN_STAKE_DURATION + 1);
 
-      await expect(manager.connect(deployer).withdraw(await user.getAddress()))
+      await expect(manager.connect(user).withdraw())
         .to.emit(manager, "Withdrawn")
         .withArgs(await user.getAddress(), amount);
 
@@ -170,17 +156,12 @@ describe("Manager – staking flow", function () {
       await nft.connect(user).approve(manager.target, nftId);
 
       await manager
-        .connect(deployer)
-        .stakeWithNft(
-          await user.getAddress(),
-          amount,
-          MIN_STAKE_DURATION,
-          nftId
-        );
+        .connect(user)
+        .stakeWithNft(amount, MIN_STAKE_DURATION, nftId);
 
       await increaseTime(MIN_STAKE_DURATION + 1);
 
-      await expect(manager.connect(deployer).withdraw(await user.getAddress()))
+      await expect(manager.connect(user).withdraw())
         .to.emit(manager, "WithdrawnWithNft")
         .withArgs(await user.getAddress(), amount, nftId);
 

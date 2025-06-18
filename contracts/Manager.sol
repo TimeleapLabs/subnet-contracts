@@ -103,16 +103,16 @@ contract Manager is Context, AccessControl {
     }
 
     /**
-     * @dev Throws if called by any account other than the owner.
      * @notice This function is used to stake tokens.
-     * @param user The address of the user to stake for.
      * @param amount The amount of tokens to stake.
      * @param duration The duration of the stake in seconds.
      */
-    function stake(address user, uint256 amount, uint256 duration) external {
+    function stake(uint256 amount, uint256 duration) external {
         if (duration < MIN_STAKE_DURATION) {
             revert MinStakeDurationNotMet();
         }
+
+        address user = _msgSender();
 
         token.safeTransferFrom(user, address(bank), amount);
         stakes.stake(user, amount, duration);
@@ -120,8 +120,13 @@ contract Manager is Context, AccessControl {
         emit Staked(user, amount, duration);
     }
 
+    /**
+     * @notice This function is used to stake tokens with an NFT.
+     * @param amount The amount of tokens to stake.
+     * @param duration The duration of the stake in seconds.
+     * @param nftId The ID of the NFT to stake.
+     */
     function stakeWithNft(
-        address user,
         uint256 amount,
         uint256 duration,
         uint256 nftId
@@ -129,6 +134,8 @@ contract Manager is Context, AccessControl {
         if (duration < MIN_STAKE_DURATION) {
             revert MinStakeDurationNotMet();
         }
+
+        address user = _msgSender();
 
         token.safeTransferFrom(user, address(bank), amount);
         nft.safeTransferFrom(user, address(bank), nftId);
@@ -140,9 +147,10 @@ contract Manager is Context, AccessControl {
     /**
      * @dev Throws if called by any account other than the owner.
      * @notice This function is used to withdraw staked tokens.
-     * @param user The address of the user to withdraw for.
      */
-    function withdraw(address user) external {
+    function withdraw() external {
+        address user = _msgSender();
+
         uint256 unlockDate = stakes.getUnlockDate(user);
         if (block.timestamp < unlockDate) {
             revert NotUnlocked();
