@@ -30,7 +30,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "build": "hardhat build",
+    "build": "tsc",
     "prepublishOnly": "yarn build"
   }
 }
