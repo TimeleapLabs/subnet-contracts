@@ -32,5 +32,8 @@
     "test": "hardhat test",
     "build": "tsc",
     "prepublishOnly": "yarn build"
+  },
+  "exports": {
+    "./sdk": "./sdk/index.js"
   }
 }
