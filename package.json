@@ -34,6 +34,7 @@
     "prepublishOnly": "yarn build"
   },
   "exports": {
-    "./sdk": "./sdk/index.js"
+    "./sdk": "./sdk/index.js",
+    "./typechain-types": "./typechain-types/index.js"
   }
 }
