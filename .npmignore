@@ -1,2 +1,8 @@
-!*.js
-!typechain-types
+.yarn
+.vscode
+
+artifacts
+cache
+coverage
+ignition
+test
