@@ -31,7 +31,7 @@ contract Bank is RepositoryUser, IERC721Receiver {
         address to,
         uint256 amount
     ) external onlyImplementation {
-        token.safeTransferFrom(address(this), to, amount);
+        token.safeTransfer(to, amount);
     }
 
     /**
@@ -57,4 +57,14 @@ contract Bank is RepositoryUser, IERC721Receiver {
         // This function is required to accept ERC721 tokens.
         return this.onERC721Received.selector;
     }
+}
+
+interface IBank {
+    function transfer(IERC20 token, address to, uint256 amount) external;
+
+    function transferERC721(
+        IERC721 token,
+        address to,
+        uint256 tokenId
+    ) external;
 }

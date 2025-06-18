@@ -9,13 +9,13 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IStakes} from "./Stakes.sol";
 import {IBank} from "./Bank.sol";
 
-MIN_STAKE_DURATION = 90 days;
+uint256 constant MIN_STAKE_DURATION = 90 days;
 
 /**
  * @title Manager
  * @dev The Manager contract is used to manage the stakes and bank contracts.
  */
-contract Manager is AccessControl, Context {
+contract Manager is Context, AccessControl {
     using SafeERC20 for IERC20;
 
     IStakes public stakes;
@@ -30,29 +30,14 @@ contract Manager is AccessControl, Context {
     event UpdatedBank(address indexed bank);
     event UpdatedToken(address indexed token);
     event UpdatedNFT(address indexed nft);
-    
-    event Slashed(
-        address indexed user,
-        address indexed to,
-        uint256 amount
-    );
 
-    event Withdrawn(
-        address indexed user,
-        uint256 amount
-    );
+    event Slashed(address indexed user, address indexed to, uint256 amount);
 
-    event WithdrawnWithNft(
-        address indexed user,
-        uint256 amount,
-        uint256 nftId
-    );
+    event Withdrawn(address indexed user, uint256 amount);
 
-    event Staked(
-        address indexed user,
-        uint256 amount,
-        uint256 duration
-    );
+    event WithdrawnWithNft(address indexed user, uint256 amount, uint256 nftId);
+
+    event Staked(address indexed user, uint256 amount, uint256 duration);
 
     event StakedWithNft(
         address indexed user,
@@ -168,13 +153,13 @@ contract Manager is AccessControl, Context {
             bank.transfer(token, user, stakeAmount);
         }
 
-        bool hasNft, uint256 stakedNftId = stakes.getStakedNftId(user);
+        (bool hasNft, uint256 stakedNftId) = stakes.getStakedNftId(user);
         if (hasNft) {
             bank.transferERC721(nft, user, stakedNftId);
         }
 
         stakes.withdraw(user);
-        
+
         if (hasNft) {
             emit WithdrawnWithNft(user, stakeAmount, stakedNftId);
         } else {
@@ -189,10 +174,10 @@ contract Manager is AccessControl, Context {
      * @param to The address to transfer slashed tokens to.
      * @param amount The amount of tokens to slash.
      */
-  function slash(
+    function slash(
         address user,
         address to,
-        uint256 amount,
+        uint256 amount
     ) external onlyRole(STAKE_MANAGER_ROLE) {
         stakes.withdraw(user);
         bank.transfer(token, to, amount);

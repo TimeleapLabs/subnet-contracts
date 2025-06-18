@@ -90,15 +90,16 @@ contract Stakes is RepositoryUser {
 }
 
 interface IStakes {
-    function stake(uint256 amount, uint256 duration) external;
+    function stake(address user, uint256 amount, uint256 duration) external;
 
     function stakeWithNft(
+        address user,
         uint256 amount,
         uint256 duration,
         uint256 nftId
     ) external;
 
-    function withdraw() external;
+    function withdraw(address user) external;
 
     function getStakeAmount(address user) external view returns (uint256);
 

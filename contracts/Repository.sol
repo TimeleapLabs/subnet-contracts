@@ -9,7 +9,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
  * @dev The Repository contract is used to store the address of the stake manager contract.
  * It is used to restrict access to the implementation contract.
  */
-contract Repository is AccessControl, Context {
+contract Repository is Context, AccessControl {
     address public implementation;
 
     event Upgraded(address indexed implementation);
@@ -30,7 +30,7 @@ contract Repository is AccessControl, Context {
         address _implementation
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         implementation = _implementation;
-        emit Updated(_implementation);
+        emit Upgraded(_implementation);
     }
 }
 
