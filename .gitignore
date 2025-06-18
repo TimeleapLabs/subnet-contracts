@@ -22,6 +22,8 @@ node_modules
 # TypeChain files
 /typechain
 /typechain-types
+/abi
+/typechain-esm
 
 # solidity-coverage files
 /coverage

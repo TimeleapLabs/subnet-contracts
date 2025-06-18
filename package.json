@@ -18,6 +18,7 @@
     "chai": "^4.2.0",
     "ethers": "^6.4.0",
     "hardhat": "^2.24.0",
+    "hardhat-abi-exporter": "^2.11.0",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
     "ts-node": ">=8.0.0",
@@ -31,10 +32,8 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "build": "tsc",
-    "prepublishOnly": "yarn build"
-  },
-  "exports": {
-    "./sdk": "./sdk/index.js",
-    "./typechain-types": "./typechain-types/index.js"
+    "prepublishOnly": "yarn build",
+    "abi": "hardhat export-abi",
+    "typechain-esm": "typechain --target=ethers-v6 --node16-modules --out-dir=./typechain-esm ./abi/contracts/**/*.json"
   }
 }
