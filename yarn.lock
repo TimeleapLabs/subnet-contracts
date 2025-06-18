@@ -1106,6 +1106,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@timeleap/subnet-contracts@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@timeleap/subnet-contracts@workspace:."
+  dependencies:
+    "@nomicfoundation/hardhat-chai-matchers": "npm:^2.0.0"
+    "@nomicfoundation/hardhat-ethers": "npm:^3.0.0"
+    "@nomicfoundation/hardhat-ignition": "npm:^0.15.0"
+    "@nomicfoundation/hardhat-ignition-ethers": "npm:^0.15.0"
+    "@nomicfoundation/hardhat-network-helpers": "npm:^1.0.0"
+    "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
+    "@nomicfoundation/hardhat-verify": "npm:^2.0.0"
+    "@openzeppelin/contracts": "npm:^5.3.0"
+    "@typechain/ethers-v6": "npm:^0.5.0"
+    "@typechain/hardhat": "npm:^9.0.0"
+    "@types/chai": "npm:^4.2.0"
+    "@types/mocha": "npm:>=9.1.0"
+    "@types/node": "npm:>=18.0.0"
+    chai: "npm:^4.2.0"
+    ethers: "npm:^6.4.0"
+    hardhat: "npm:^2.24.0"
+    hardhat-gas-reporter: "npm:^1.0.8"
+    solidity-coverage: "npm:^0.8.0"
+    ts-node: "npm:>=8.0.0"
+    typechain: "npm:^8.3.0"
+    typescript: "npm:>=4.5.0"
+  languageName: unknown
+  linkType: soft
+
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.11
   resolution: "@tsconfig/node10@npm:1.0.11"
@@ -5213,34 +5241,6 @@ __metadata:
   checksum: 10c0/9681a6257b925a7fa0f285851c0e613cc934a50661fa7bb41ca9cbbff89686bb4a0ee366e6ecedc4daafd01e83eee0720111ab294366fe7c185e935475ebcecd
   languageName: node
   linkType: hard
-
-"subnet-contracts@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "subnet-contracts@workspace:."
-  dependencies:
-    "@nomicfoundation/hardhat-chai-matchers": "npm:^2.0.0"
-    "@nomicfoundation/hardhat-ethers": "npm:^3.0.0"
-    "@nomicfoundation/hardhat-ignition": "npm:^0.15.0"
-    "@nomicfoundation/hardhat-ignition-ethers": "npm:^0.15.0"
-    "@nomicfoundation/hardhat-network-helpers": "npm:^1.0.0"
-    "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
-    "@nomicfoundation/hardhat-verify": "npm:^2.0.0"
-    "@openzeppelin/contracts": "npm:^5.3.0"
-    "@typechain/ethers-v6": "npm:^0.5.0"
-    "@typechain/hardhat": "npm:^9.0.0"
-    "@types/chai": "npm:^4.2.0"
-    "@types/mocha": "npm:>=9.1.0"
-    "@types/node": "npm:>=18.0.0"
-    chai: "npm:^4.2.0"
-    ethers: "npm:^6.4.0"
-    hardhat: "npm:^2.24.0"
-    hardhat-gas-reporter: "npm:^1.0.8"
-    solidity-coverage: "npm:^0.8.0"
-    ts-node: "npm:>=8.0.0"
-    typechain: "npm:^8.3.0"
-    typescript: "npm:>=4.5.0"
-  languageName: unknown
-  linkType: soft
 
 "supports-color@npm:^3.1.0":
   version: 3.2.3
