@@ -22,6 +22,7 @@ contract Manager is Context, AccessControl {
     IBank public bank;
     IERC20 public token;
     IERC721 public nft;
+    bool private unkockOverride;
 
     bytes32 public constant STAKE_MANAGER_ROLE =
         keccak256("STAKE_MANAGER_ROLE");
@@ -32,12 +33,10 @@ contract Manager is Context, AccessControl {
     event UpdatedNFT(address indexed nft);
 
     event Slashed(address indexed user, address indexed to, uint256 amount);
-
     event Withdrawn(address indexed user, uint256 amount);
-
     event WithdrawnWithNft(address indexed user, uint256 amount, uint256 nftId);
-
     event Staked(address indexed user, uint256 amount, uint256 duration);
+    event UnlockOverrideSet(bool unkockOverride);
 
     event StakedWithNft(
         address indexed user,
@@ -103,6 +102,18 @@ contract Manager is Context, AccessControl {
     }
 
     /**
+     * @dev Throws if called by any account other than the owner.
+     * @notice This function is used to set the unkock override flag.
+     * @param _unkockOverride The value of the unkock override flag.
+     */
+    function setUnkockOverride(
+        bool _unkockOverride
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        unkockOverride = _unkockOverride;
+        emit UnlockOverrideSet(_unkockOverride);
+    }
+
+    /**
      * @notice This function is used to stake tokens.
      * @param amount The amount of tokens to stake.
      * @param duration The duration of the stake in seconds.
@@ -151,9 +162,11 @@ contract Manager is Context, AccessControl {
     function withdraw() external {
         address user = _msgSender();
 
-        uint256 unlockDate = stakes.getUnlockDate(user);
-        if (block.timestamp < unlockDate) {
-            revert NotUnlocked();
+        if (!unkockOverride) {
+            uint256 unlockDate = stakes.getUnlockDate(user);
+            if (block.timestamp < unlockDate) {
+                revert NotUnlocked();
+            }
         }
 
         uint256 stakeAmount = stakes.getStakeAmount(user);
