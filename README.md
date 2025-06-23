@@ -39,6 +39,16 @@ This pattern ensures that:
 - Upgrades do not require interrupting the staking process.
 - The system remains extensible and maintainable over time.
 
+## Relevant Contract Addresses
+
+- Repo: `0x0eB83E403a36DfE8b7E8E70Caa1f5cF0c1C408E4`
+- Bank: `0x43C6b0a2D6a5cb0cFC4E0FB0D44dEc69151dBF9d`
+- Stakes: `0xEE4255569af3C8F9161C9Ca430769C90f1416Bc9`
+- Manager: `0x402Ea6068ee561c7553f8be21C6384EC29886819`
+- Linker: `0x3C073B069D25FD17474E9EA9810B024fb3Cf966A`
+- KNS: `0xf1264873436A0771E440E2b28072FAfcC5EEBd01`
+- Katana: `0x13b8046b98c7d86d719fc34e5c3df5e5e8da897a`
+
 ## 📦 Dependencies
 
 - [OpenZeppelin Contracts v5.x](https://github.com/OpenZeppelin/openzeppelin-contracts)
