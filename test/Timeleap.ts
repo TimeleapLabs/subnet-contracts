@@ -31,7 +31,7 @@ async function increaseTime(seconds: number) {
   await ethers.provider.send("evm_mine", []);
 }
 
-describe("Manager – staking flow", function () {
+describe("Manager - staking flow", function () {
   let deployer: HardhatEthersSigner;
   let user: HardhatEthersSigner;
 
@@ -134,6 +134,7 @@ describe("Manager – staking flow", function () {
     });
 
     it("withdraws ERC20 when unlocked", async () => {
+      const balance = await token.balanceOf(await user.getAddress());
       const amount = ethers.parseEther("15");
       await token.connect(user).approve(manager.target, amount);
       await manager.connect(user).stake(amount, MIN_STAKE_DURATION);
@@ -145,6 +146,7 @@ describe("Manager – staking flow", function () {
         .withArgs(await user.getAddress(), amount);
 
       expect(await token.balanceOf(bank.target)).to.equal(0);
+      expect(await token.balanceOf(await user.getAddress())).to.equal(balance);
       expect(await stakes.getStakeAmount(await user.getAddress())).to.equal(0);
     });
 
