@@ -26,6 +26,14 @@ contract Linker is Context, AccessControl {
     }
 
     /**
+     * @dev Sets the stakes contract address.
+     * @param _stakes The address of the stakes contract.
+     */
+    function setStakes(IStakes _stakes) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakes = _stakes;
+    }
+
+    /**
      * @dev Links a user to a specific identifier.
      * @param to The identifier to link the user to.
      */
