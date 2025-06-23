@@ -170,16 +170,16 @@ contract Manager is Context, AccessControl {
         }
 
         uint256 stakeAmount = stakes.getStakeAmount(user);
+        (bool hasNft, uint256 stakedNftId) = stakes.getStakedNftId(user);
+        stakes.withdraw(user);
+
         if (stakeAmount > 0) {
             bank.transfer(token, user, stakeAmount);
         }
 
-        (bool hasNft, uint256 stakedNftId) = stakes.getStakedNftId(user);
         if (hasNft) {
             bank.transferERC721(nft, user, stakedNftId);
         }
-
-        stakes.withdraw(user);
 
         if (hasNft) {
             emit WithdrawnWithNft(user, stakeAmount, stakedNftId);
